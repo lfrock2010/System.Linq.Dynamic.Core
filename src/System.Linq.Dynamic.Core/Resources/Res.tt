@@ -4,12 +4,25 @@
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
+<#@ import namespace="System.Reflection" #>
 <#@ import namespace="System.Resources" #>
 <#@ import namespace="System.Collections" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
 <#
 string assemblyName =  this.Host.ResolveAssemblyReference("$(AssemblyName)");
+string projectDir = this.Host.ResolveAssemblyReference("$(ProjectDir)");
+string resFileName = Path.Combine(projectDir, "Resources", "Res.resx");     
+string snkFileName = Path.Combine(projectDir, $"{assemblyName}.snk");
+
+ResXResourceReader reader = new ResXResourceReader(resFileName);
+IEnumerable<DictionaryEntry> enumerator = reader.OfType<DictionaryEntry>()
+                                            .OrderBy(x => x.Key);
+
+byte[] snk = File.ReadAllBytes(snkFileName);
+var snkp = new StrongNameKeyPair(snk);
+byte[] publicKeyByteArray = snkp.PublicKey;
+string publicKey = BitConverter.ToString(publicKeyByteArray).Replace("-", "");
 #>
 using System.Reflection;
 
@@ -20,30 +33,32 @@ namespace System.Linq.Dynamic.Core;
 /// </summary>
 internal static partial class Res 
 {        
-    private static global::System.Resources.ResourceManager? resourceMan;
+    private static global::System.Resources.ResourceManager? resourceManager;
     
     /// <summary>
     ///   Returns the cached ResourceManager instance used by this class.
-    /// </summary>        
+    /// </summary>  
+    [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
     public static global::System.Resources.ResourceManager ResourceManager 
     {
         get 
         {
-            if (resourceMan is null) 
+            if (resourceManager is null) 
             {
 #if !EF && !EFCORE
-                global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("<#=assemblyName#>.Resources.Res", typeof(Res).GetTypeInfo().Assembly);
-                resourceMan = temp;
+                //Note: Important, typeof(Res).GetTypeInfo().Assembly is used instead of typeof(Res).Assembly for compatibility with .netstandard 1.3 and uap
+                resourceManager = new global::System.Resources.ResourceManager("<#=assemblyName#>.Res", typeof(Res).GetTypeInfo().Assembly);
 #else
+                //PublicKey=<#= publicKey #>
                 Assembly dynamicCoreAssembly = typeof(DynamicClass).GetTypeInfo().Assembly;
                 Type resType = dynamicCoreAssembly.GetType($"{typeof(Res).Namespace}.{nameof(Res)}");
 
                 PropertyInfo propertyInfo = resType.GetProperty(nameof(ResourceManager), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);                
-                resourceMan = (global::System.Resources.ResourceManager)propertyInfo.GetValue(null, new object[0]);
+                resourceManager = (global::System.Resources.ResourceManager)propertyInfo.GetValue(null, new object[0]);
 #endif
             }
 
-            return resourceMan;
+            return resourceManager;
         }
     }
     
@@ -51,25 +66,20 @@ internal static partial class Res
     ///   Overrides the current thread's CurrentUICulture property for all
     ///   resource lookups using this strongly typed resource class.
     /// </summary>        
+    [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
     public static global::System.Globalization.CultureInfo? Culture 
     {
         get;
         set;
     }
 <#
-string projectDir = this.Host.ResolveAssemblyReference("$(ProjectDir)");
-string filename = Path.Combine(projectDir, "Resources", "Res.resx");        
-
-ResXResourceReader reader = new ResXResourceReader(filename);
-IEnumerable<DictionaryEntry> enumerator = reader.OfType<DictionaryEntry>()
-                                            .OrderBy(x => x.Key);
 foreach (DictionaryEntry entry in enumerator) 
 {
 #>    
     /// <summary>
     /// Looks up a localized string similar to "Ambiguous invocation of <#= entry.Value #>".
     /// </summary>
-    public static string? <#= entry.Key #> => ResourceManager.GetString("<#= entry.Key #>", Culture);
+    public static string <#= entry.Key #> => ResourceManager.GetString("<#= entry.Key #>", Culture);
 <#
 }
 #>       

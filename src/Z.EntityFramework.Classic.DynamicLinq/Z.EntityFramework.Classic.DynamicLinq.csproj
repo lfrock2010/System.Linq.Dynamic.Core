@@ -24,7 +24,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="..\System.Linq.Dynamic.Core\Res.cs" />		
+        <Compile Include="..\System.Linq.Dynamic.Core\Resources\Res.cs"/>
         <Compile Include="..\System.Linq.Dynamic.Core\Compatibility\*.cs" />
         <Compile Include="..\System.Linq.Dynamic.Core\Extensions\*.cs" />
         <Compile Include="..\System.Linq.Dynamic.Core\Validation\*.cs" />
