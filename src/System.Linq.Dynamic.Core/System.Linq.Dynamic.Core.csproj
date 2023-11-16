@@ -41,14 +41,14 @@
         <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
         <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
         <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-        <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
+        <TargetPlatformVersion>10.0.22621.0</TargetPlatformVersion>
         <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
         <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
         <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
         <DefineConstants>$(DefineConstants);WINDOWS_UWP;UAP10_0</DefineConstants>
         <LanguageTargets>$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets</LanguageTargets>
     </PropertyGroup>
-
+   
     <ItemGroup>
         <None Remove="LinkerConfig.xml" />
     </ItemGroup>
@@ -57,7 +57,23 @@
             <LogicalName>$(MSBuildProjectName).xml</LogicalName>
         </EmbeddedResource>
     </ItemGroup>
-
+    
+    <ItemGroup>
+        <None Include="Resources\Res.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Res.tt</DependentUpon>
+        </None>
+        <Compile Update="Resources\Res.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Res.tt</DependentUpon>
+        </Compile>
+        <None Update="Resources\Res.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>Res.cs</LastGenOutput>
+        </None>
+    </ItemGroup>   
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" PrivateAssets="All" />
     </ItemGroup>

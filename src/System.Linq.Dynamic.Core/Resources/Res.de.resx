@@ -1,0 +1,353 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AmbiguousConstructorInvocation" xml:space="preserve">
+    <value>Mehrdeutiger Aufruf des Konstruktors "{0}"</value>
+  </data>
+  <data name="AmbiguousIndexerInvocation" xml:space="preserve">
+    <value>Mehrdeutiger Aufruf des Indexer in Typ "{0}"</value>
+  </data>
+  <data name="AmbiguousMethodInvocation" xml:space="preserve">
+    <value>Mehrdeutiger Aufruf der Methode "{0}" in Typ "{1}"</value>
+  </data>
+  <data name="ArgsIncompatibleWithLambda" xml:space="preserve">
+    <value>Argumentliste, die unvereinbar mit der Lambda-Ausdruck</value>
+  </data>
+  <data name="BothTypesConvertToOther" xml:space="preserve">
+    <value>Beide Typen "{0}" und "{1}" Konvertieren in die andere</value>
+  </data>
+  <data name="CannotConvertValue" xml:space="preserve">
+    <value>Ein Wert vom Typ "{0}" kann nicht in "{1}" konvertiert werden</value>
+  </data>
+  <data name="CannotIndexMultiDimArray" xml:space="preserve">
+    <value>Die Indizierung mehrdimensionaler Arrays wird nicht unterstützt</value>
+  </data>
+  <data name="CloseBracketOrCommaExpected" xml:space="preserve">
+    <value>'] 'oder',' erwartet</value>
+  </data>
+  <data name="CloseParenOrCommaExpected" xml:space="preserve">
+    <value>') 'oder',' erwartet</value>
+  </data>
+  <data name="CloseParenOrOperatorExpected" xml:space="preserve">
+    <value>')' oder Operator erwartet</value>
+  </data>
+  <data name="ColonExpected" xml:space="preserve">
+    <value>':' erwartet</value>
+  </data>
+  <data name="DigitExpected" xml:space="preserve">
+    <value>Ziffer erwartet</value>
+  </data>
+  <data name="DotOrOpenParenExpected" xml:space="preserve">
+    <value>'.' oder '(' expected</value>
+  </data>
+  <data name="DuplicateIdentifier" xml:space="preserve">
+    <value>Der Bezeichner "{0}" wurde mehr als einmal definiert.</value>
+  </data>
+  <data name="ExpressionExpected" xml:space="preserve">
+    <value>Ausdruck erwartet</value>
+  </data>
+  <data name="ExpressionTypeMismatch" xml:space="preserve">
+    <value>Ausdruck vom Typ "{0}" erwartet</value>
+  </data>
+  <data name="FirstExprMustBeBool" xml:space="preserve">
+    <value>Der erste Ausdruck muss vom Typ "Boolean" sein.</value>
+  </data>
+  <data name="IdentifierExpected" xml:space="preserve">
+    <value>Bezeichner erwartet</value>
+  </data>
+  <data name="IdentifierImplementingInterfaceExpected" xml:space="preserve">
+    <value>Bezeichner, die Schnittstelle "{0}" erwartet</value>
+  </data>
+  <data name="IifRequiresThreeArgs" xml:space="preserve">
+    <value>Die 'Iif'-Funktion erfordert drei Argumente</value>
+  </data>
+  <data name="IncompatibleOperand" xml:space="preserve">
+    <value>Geben Sie den Operator "{0}" nicht kompatibel mit Operanden "{1}"</value>
+  </data>
+  <data name="IncompatibleOperands" xml:space="preserve">
+    <value>Operator "{0}" nicht kompatibel mit Operandentypen "{1}" und "{2}"</value>
+  </data>
+  <data name="InvalidCharacter" xml:space="preserve">
+    <value>Syntax-Fehler "{0}"</value>
+  </data>
+  <data name="InvalidCharacterLiteral" xml:space="preserve">
+    <value>Character Literal muss genau ein Zeichen enthalten.</value>
+  </data>
+  <data name="InvalidIndex" xml:space="preserve">
+    <value>Arrayindex muss ein ganzzahliger Ausdruck sein.</value>
+  </data>
+  <data name="InvalidIntegerLiteral" xml:space="preserve">
+    <value>Ungültige ganzzahlige Literale "{0}"</value>
+  </data>
+  <data name="InvalidRealLiteral" xml:space="preserve">
+    <value>Ungültige richtiger literal "{0}"</value>
+  </data>
+  <data name="MethodIsVoid" xml:space="preserve">
+    <value>Methode "{0}" in Typ "{1}" keinen Wert zurück.</value>
+  </data>
+  <data name="MethodsAreInaccessible" xml:space="preserve">
+    <value>Methoden auf Typ "{0}" kann nicht zugegriffen werden</value>
+  </data>
+  <data name="MissingAsClause" xml:space="preserve">
+    <value>Ausdruck fehlt eine as-Klausel</value>
+  </data>
+  <data name="NeitherTypeConvertsToOther" xml:space="preserve">
+    <value>Weder die Typen "{0}" und "{1}" Bekehrten zum anderen</value>
+  </data>
+  <data name="NoApplicableAggregate" xml:space="preserve">
+    <value>Es ist keine anwendbare Aggregatmethode „{0}({1})“ vorhanden</value>
+  </data>
+  <data name="NoApplicableIndexer" xml:space="preserve">
+    <value>Keine anwendbaren Indexer ist in Typ "{0}" vorhanden.</value>
+  </data>
+  <data name="NoApplicableMethod" xml:space="preserve">
+    <value>Keine anwendbare Methode "{0}" ist in Typ "{1}" vorhanden.</value>
+  </data>
+  <data name="NoItInScope" xml:space="preserve">
+    <value>Nein ist 'es' im Bereich</value>
+  </data>
+  <data name="NoMatchingConstructor" xml:space="preserve">
+    <value>Keine übereinstimmenden Konstruktor in Typ "{0}"</value>
+  </data>
+  <data name="NoParentInScope" xml:space="preserve">
+    <value>Keine 'Parent' befindet sich im Bereich</value>
+  </data>
+  <data name="NoRootInScope" xml:space="preserve">
+    <value>Keine 'Root' befindet sich im Bereich</value>
+  </data>
+  <data name="OpenBracketExpected" xml:space="preserve">
+    <value>' [' erwartet</value>
+  </data>
+  <data name="OpenParenExpected" xml:space="preserve">
+    <value>'(' erwartet</value>
+  </data>
+  <data name="OpenParenOrIdentifierExpected" xml:space="preserve">
+    <value>' (' oder Bezeichner erwartet</value>
+  </data>
+  <data name="ParseExceptionFormat" xml:space="preserve">
+    <value>{0} (am Index {1})</value>
+  </data>
+  <data name="SyntaxError" xml:space="preserve">
+    <value>Syntax-Fehler</value>
+  </data>
+  <data name="TokenExpected" xml:space="preserve">
+    <value>{0} erwartet</value>
+  </data>
+  <data name="TypeHasNoNullableForm" xml:space="preserve">
+    <value>Typ "{0}" verfügt über keine NULL-Werte zulässt-form</value>
+  </data>
+  <data name="UnknownIdentifier" xml:space="preserve">
+    <value>Unbekannt-ID "{0}"</value>
+  </data>
+  <data name="UnknownPropertyOrField" xml:space="preserve">
+    <value>Keine Eigenschaft oder ein Feld "{0}" ist in Typ "{1}" vorhanden</value>
+  </data>
+  <data name="UnterminatedStringLiteral" xml:space="preserve">
+    <value>Nicht terminierten String-literal</value>
+  </data>
+  <data name="TypeNotFound" xml:space="preserve">
+    <value>Geben Sie '{0}' nicht gefunden ein</value>
+  </data>
+  <data name="OpenCurlyParenExpected" xml:space="preserve">
+    <value>'{' erwartet</value>
+  </data>
+  <data name="NullPropagationRequiresCorrectArgs" xml:space="preserve">
+    <value>Für die Funktion 'np' (Null-Propagation) sind 1 oder 2 Argumente erforderlich</value>
+  </data>
+  <data name="MinusCannotBeAppliedToUnsignedInteger" xml:space="preserve">
+    <value>'-' kann nicht auf ganze Zahlen ohne Vorzeichen angewendet werden.</value>
+  </data>
+  <data name="CloseBracketExpected" xml:space="preserve">
+    <value>']' erwartet</value>
+  </data>
+  <data name="DotExpected" xml:space="preserve">
+    <value>'.' erwartet</value>
+  </data>
+  <data name="DotOrOpenParenOrStringLiteralExpected" xml:space="preserve">
+    <value>'.' oder '(' oder String-Literal erwartet</value>
+  </data>
+  <data name="FunctionRequiresOneArg" xml:space="preserve">
+    <value>Die Funktion '{0}' erfordert ein Argument</value>
+  </data>
+  <data name="FunctionRequiresOneNotNullArg" xml:space="preserve">
+    <value>Für die Funktion '{0}' ist ein Argument erforderlich, das nicht null ist.</value>
+  </data>
+  <data name="HexCharExpected" xml:space="preserve">
+    <value>Hexadezimalzeichen erwartet</value>
+  </data>
+  <data name="IncompatibleTypes" xml:space="preserve">
+    <value>Die Typen "{0}" und "{1}" sind nicht kompatibel</value>
+  </data>
+  <data name="InvalidIntegerQualifier" xml:space="preserve">
+    <value>Ungültiges ganzzahliges Literal-Qualifikationsmerkmal '{0}'</value>
+  </data>
+  <data name="IQueryableProviderNotAsync" xml:space="preserve">
+    <value>Der Anbieter für die Quelle IQueryable implementiert IAsyncQueryProvider / IDbAsyncQueryProvider nicht. Nur Anbieter, die IAsyncQueryProvider / IDbAsyncQueryProvider implementieren, können für asynchrone Entity Framework-Vorgänge verwendet werden.</value>
+  </data>
+  <data name="IsNullRequiresTwoArgs" xml:space="preserve">
+    <value>Die Funktion 'isnull' erfordert zwei Argumente</value>
+  </data>
+  <data name="OutKeywordRequiresDiscard" xml:space="preserve">
+    <value>Bei Verwendung einer Out-Variablen ist ein Verwerfen „_“ erforderlich.</value>
+  </data>
+  <data name="NewOperatorIsNotAllowed" xml:space="preserve">
+    <value>Die Verwendung des neuen Operators ist über die ParsingConfig nicht zulässig.
+</value>
+  </data>
+  <data name="NullPropagationRequiresValidExpression" xml:space="preserve">
+    <value>Für die Funktion „np“ (Nullpropagation) muss das erste Argument ein MemberExpression, ParameterExpression oder MethodCallExpression sein</value>
+  </data>
+  <data name="FunctionRequiresOneOrTwoArgs" xml:space="preserve">
+    <value>Die Funktion „{0}“ erfordert 1 oder 2 Argumente</value>
+  </data>
+  <data name="EnumTypeNotFound" xml:space="preserve">
+    <value>Enum-Typ „{0}“ nicht gefunden</value>
+  </data>
+  <data name="EnumValueExpected" xml:space="preserve">
+    <value>Enum-Wert erwartet</value>
+  </data>
+  <data name="EnumValueNotDefined" xml:space="preserve">
+    <value>Der Enum-Wert „{0}“ ist im Enum-Typ „{1}“ nicht definiert.</value>
+  </data>
+  <data name="FunctionRequiresNotNullArgOfType" xml:space="preserve">
+    <value>Die Funktion „{0}“ erfordert, dass das Argument {1} nicht null und vom Typ {2} ist.
+</value>
+  </data>
+  <data name="BinaryCharExpected" xml:space="preserve">
+    <value>Binäres Zeichen erwartet</value>
+  </data>
+  <data name="DynamicExpandoObjectIsNotSupported" xml:space="preserve">
+    <value>Dynamic/ExpandoObject wird in .NET 3.5, UAP und .NETStandard 1.3 nicht unterstützt</value>
+  </data>
+  <data name="InvalidBinaryIntegerLiteral" xml:space="preserve">
+    <value>Ungültiges binäres Ganzzahlliteral „{0}“</value>
+  </data>
+  <data name="InvalidStringLength" xml:space="preserve">
+    <value>Die Zeichenfolge „{0}“ sollte mindestens {1} Zeichen enthalten.</value>
+  </data>
+  <data name="InvalidStringQuoteCharacter" xml:space="preserve">
+    <value>Eine Escape-Zeichenfolge sollte mit einem doppelten (\") oder einem einfachen (') Anführungszeichen beginnen.</value>
+  </data>
+  <data name="UnexpectedUnclosedString" xml:space="preserve">
+    <value>Unerwartetes Ende der Zeichenfolge mit nicht geschlossener Zeichenfolge an Position {0} in der Nähe von „{1}“.</value>
+  </data>
+  <data name="UnexpectedUnrecognizedEscapeSequence" xml:space="preserve">
+    <value>Unerwartete, unerkannte Escape-Sequenz an Position {0} in der Nähe von „{1}“.</value>
+  </data>
+</root>

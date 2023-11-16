@@ -1,0 +1,77 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Windows.Forms" #> 
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Resources" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+string assemblyName =  this.Host.ResolveAssemblyReference("$(AssemblyName)");
+#>
+using System.Reflection;
+
+namespace System.Linq.Dynamic.Core;
+
+/// <summary>
+/// Custom strongly-typed resource class with compatibility with .netstandard 1.3 and uap, for looking up localized strings
+/// </summary>
+internal static partial class Res 
+{        
+    private static global::System.Resources.ResourceManager? resourceMan;
+    
+    /// <summary>
+    ///   Returns the cached ResourceManager instance used by this class.
+    /// </summary>        
+    public static global::System.Resources.ResourceManager ResourceManager 
+    {
+        get 
+        {
+            if (resourceMan is null) 
+            {
+#if !EF && !EFCORE
+                global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("<#=assemblyName#>.Resources.Res", typeof(Res).GetTypeInfo().Assembly);
+                resourceMan = temp;
+#else
+                Assembly dynamicCoreAssembly = typeof(DynamicClass).GetTypeInfo().Assembly;
+                Type resType = dynamicCoreAssembly.GetType($"{typeof(Res).Namespace}.{nameof(Res)}");
+
+                PropertyInfo propertyInfo = resType.GetProperty(nameof(ResourceManager), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);                
+                resourceMan = (global::System.Resources.ResourceManager)propertyInfo.GetValue(null, new object[0]);
+#endif
+            }
+
+            return resourceMan;
+        }
+    }
+    
+    /// <summary>
+    ///   Overrides the current thread's CurrentUICulture property for all
+    ///   resource lookups using this strongly typed resource class.
+    /// </summary>        
+    public static global::System.Globalization.CultureInfo? Culture 
+    {
+        get;
+        set;
+    }
+<#
+string projectDir = this.Host.ResolveAssemblyReference("$(ProjectDir)");
+string filename = Path.Combine(projectDir, "Resources", "Res.resx");        
+
+ResXResourceReader reader = new ResXResourceReader(filename);
+IEnumerable<DictionaryEntry> enumerator = reader.OfType<DictionaryEntry>()
+                                            .OrderBy(x => x.Key);
+foreach (DictionaryEntry entry in enumerator) 
+{
+#>    
+    /// <summary>
+    /// Looks up a localized string similar to "Ambiguous invocation of <#= entry.Value #>".
+    /// </summary>
+    public static string? <#= entry.Key #> => ResourceManager.GetString("<#= entry.Key #>", Culture);
+<#
+}
+#>       
+}
+
