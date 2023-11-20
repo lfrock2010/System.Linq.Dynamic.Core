@@ -71,7 +71,7 @@
         </None>
        
         <EmbeddedResource Update="Resources\*.resx">
-            <LogicalName>$([System.String]::new('System.Linq.Dynamic.Core.'))%(FileName)$([System.String]::new('.resources'))</LogicalName>
+            <LogicalName>$(AssemblyName)$([System.String]::new('.Resources.'))%(FileName)$([System.String]::new('.resources'))</LogicalName>
         </EmbeddedResource>       
     </ItemGroup>   
     <ItemGroup>

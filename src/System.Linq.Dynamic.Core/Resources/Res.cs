@@ -22,9 +22,8 @@ internal static partial class Res
             {
 #if !EF && !EFCORE
                 //Note: Important, typeof(Res).GetTypeInfo().Assembly is used instead of typeof(Res).Assembly for compatibility with .netstandard 1.3 and uap
-                resourceManager = new global::System.Resources.ResourceManager("System.Linq.Dynamic.Core.Res", typeof(Res).GetTypeInfo().Assembly);
-#else
-                //PublicKey=00240000048000009400000006020000002400005253413100040000010001003DAF4F4B7D160B1033DE9A4A3275F4667A4558144296C3BB593AA0FD213DADF0EA4DF5AA69E21763D409ADA2A8F8925081BC2E81362BE7916E22C624344309EBA764EDC4F8F84237AE053D2687AB3B888C9F4F3FF8A804BB5FEE61E1CEADEC97B08994580EF2DF6BD7E077DF4AD205C6D2BDE479C512AB9BE6ECC23C10694597
+                resourceManager = new global::System.Resources.ResourceManager("System.Linq.Dynamic.Core.Resources.Res", typeof(Res).GetTypeInfo().Assembly);
+#else                
                 Assembly dynamicCoreAssembly = typeof(DynamicClass).GetTypeInfo().Assembly;
                 Type resType = dynamicCoreAssembly.GetType($"{typeof(Res).Namespace}.{nameof(Res)}");
 
