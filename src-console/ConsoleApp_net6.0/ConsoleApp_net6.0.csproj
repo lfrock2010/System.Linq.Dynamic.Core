@@ -8,7 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\System.Linq.Dynamic.Core\System.Linq.Dynamic.Core.csproj" />
+        <ProjectReference Include="..\..\src\System.Linq.Dynamic.Core\System.Linq.Dynamic.Core.csproj">
+            <!--To test in netstandard1.3, uncomment the line below-->
+            <!--<SetTargetFramework>TargetFramework=netstandard1.3</SetTargetFramework>-->
+        </ProjectReference>
     </ItemGroup>
 
 </Project>
