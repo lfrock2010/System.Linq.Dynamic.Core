@@ -45,6 +45,7 @@ public class ExpressionParser
     private ParameterExpression? _root;
     private Type? _resultType;
     private bool _createParameterCtor;
+    private ConstantExpressionHelper _constantExpressionHelper;
 
     /// <summary>
     /// Gets name for the `it` field. By default this is set to the KeyWord value "it".
@@ -81,6 +82,7 @@ public class ExpressionParser
         _methodFinder = new MethodFinder(_parsingConfig, _expressionHelper);
         _typeFinder = new TypeFinder(_parsingConfig, _keywordsHelper);
         _typeConverterFactory = new TypeConverterFactory(_parsingConfig);
+        _constantExpressionHelper = ConstantExpressionHelperFactory.GetInstance(_parsingConfig);
 
         if (parameters != null)
         {
@@ -889,25 +891,26 @@ public class ExpressionParser
     {
         _textParser.ValidateToken(TokenId.StringLiteral);
 
-        var stringValue = StringParser.ParseString(_textParser.CurrentToken.Text);
+        var text = _textParser.CurrentToken.Text;
+        var parsedStringValue = StringParser.ParseString(_textParser.CurrentToken.Text);
 
         if (_textParser.CurrentToken.Text[0] == '\'')
         {
-            if (stringValue.Length > 1)
+            if (parsedStringValue.Length > 1)
             {
                 throw ParseError(Res.InvalidCharacterLiteral);
             }
 
             _textParser.NextToken();
-            return ConstantExpressionHelper.CreateLiteral(stringValue[0], stringValue);
+            return _constantExpressionHelper.CreateLiteral(parsedStringValue[0], parsedStringValue);
         }
 
         _textParser.NextToken();
 
-        if (_parsingConfig.SupportCastingToFullyQualifiedTypeAsString && !forceParseAsString && stringValue.Length > 2 && stringValue.Contains('.'))
+        if (_parsingConfig.SupportCastingToFullyQualifiedTypeAsString && !forceParseAsString && parsedStringValue.Length > 2 && parsedStringValue.Contains('.'))
         {
             // Try to resolve this string as a type
-            var type = _typeFinder.FindTypeByName(stringValue, null, false);
+            var type = _typeFinder.FindTypeByName(parsedStringValue, null, false);
             if (type is { })
             {
                 return type;
@@ -917,11 +920,13 @@ public class ExpressionParser
         // While the next token is also a string, keep concatenating these strings and get next token
         while (_textParser.CurrentToken.Id == TokenId.StringLiteral)
         {
-            stringValue += _textParser.CurrentToken.Text;
+            text += _textParser.CurrentToken.Text;
             _textParser.NextToken();
         }
-        
-        return ConstantExpressionHelper.CreateLiteral(stringValue, stringValue);
+
+        parsedStringValue = StringParser.ParseStringAndReplaceDoubleQuotes(text, _textParser.CurrentToken.Pos);
+
+        return _constantExpressionHelper.CreateLiteral(parsedStringValue, parsedStringValue);
     }
 
     private Expression ParseIntegerLiteral()
@@ -2170,15 +2175,19 @@ public class ExpressionParser
     {
         _textParser.ValidateToken(TokenId.OpenParen, Res.OpenParenExpected);
         _textParser.NextToken();
-        Expression[] args = _textParser.CurrentToken.Id != TokenId.CloseParen ? ParseArguments() : new Expression[0];
+
+        var args = _textParser.CurrentToken.Id != TokenId.CloseParen ? ParseArguments() : new Expression[0];
+
         _textParser.ValidateToken(TokenId.CloseParen, Res.CloseParenOrCommaExpected);
         _textParser.NextToken();
+
         return args;
     }
 
     private Expression[] ParseArguments()
     {
         var argList = new List<Expression>();
+
         while (true)
         {
             var argumentExpression = ParseOutKeyword();
