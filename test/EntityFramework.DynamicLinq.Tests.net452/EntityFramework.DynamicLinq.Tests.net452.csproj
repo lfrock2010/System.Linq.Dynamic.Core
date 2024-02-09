@@ -294,6 +294,18 @@
     <Compile Include="..\System.Linq.Dynamic.Core.Tests\QueryableTests.Is,OfType,As,Cast.cs">
       <Link>QueryableTests.Is,OfType,As,Cast.cs</Link>
     </Compile>
+    <Compile Include="..\System.Linq.Dynamic.Core.Tests\TestClasses\CustomClassWithStaticMethod.cs">
+      <Link>TestClasses\CustomClassWithStaticMethod.cs</Link>
+    </Compile>
+    <Compile Include="..\System.Linq.Dynamic.Core.Tests\TestClasses\StaticHelper.cs">
+      <Link>TestClasses\StaticHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\System.Linq.Dynamic.Core.Tests\TestClasses\StaticHelperSqlExpression.cs">
+      <Link>TestClasses\StaticHelperSqlExpression.cs</Link>
+    </Compile>
+    <Compile Include="..\System.Linq.Dynamic.Core.Tests\TestClasses\TestCustomTypeProvider.cs">
+      <Link>TestClasses\TestCustomTypeProvider.cs</Link>
+    </Compile>
     <Compile Include="..\System.Linq.Dynamic.Core.Tests\TestHelpers\DisplayTestMethodNameAttribute.cs">
       <Link>TestHelpers\DisplayTestMethodNameAttribute.cs</Link>
     </Compile>

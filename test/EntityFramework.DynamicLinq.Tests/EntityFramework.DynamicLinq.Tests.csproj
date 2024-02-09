@@ -20,6 +20,10 @@
         <Compile Include="..\System.Linq.Dynamic.Core.Tests\QueryableTests.cs" />
         <Compile Include="..\System.Linq.Dynamic.Core.Tests\QueryableTests.*.cs" />
         <Compile Include="..\System.Linq.Dynamic.Core.Tests\EntitiesTests.cs" />
+        <Compile Include="..\System.Linq.Dynamic.Core.Tests\TestClasses\CustomClassWithStaticMethod.cs" Link="TestClasses\CustomClassWithStaticMethod.cs" />
+        <Compile Include="..\System.Linq.Dynamic.Core.Tests\TestClasses\StaticHelper.cs" Link="TestClasses\StaticHelper.cs" />
+        <Compile Include="..\System.Linq.Dynamic.Core.Tests\TestClasses\StaticHelperSqlExpression.cs" Link="TestClasses\StaticHelperSqlExpression.cs" />
+        <Compile Include="..\System.Linq.Dynamic.Core.Tests\TestClasses\TestCustomTypeProvider.cs" Link="TestClasses\TestCustomTypeProvider.cs" />
         <Compile Include="..\System.Linq.Dynamic.Core.Tests\EntitiesTests.*.cs" />
         <Compile Include="..\System.Linq.Dynamic.Core.Tests\Entities\*.cs" />
         <Compile Include="..\System.Linq.Dynamic.Core.Tests\TestHelpers\*.cs" />
@@ -56,6 +60,10 @@
     <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
         <Reference Include="System" />
         <Reference Include="Microsoft.CSharp" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="TestClasses\" />
     </ItemGroup>
 
 </Project>
