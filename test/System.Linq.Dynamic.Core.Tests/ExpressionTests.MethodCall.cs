@@ -22,6 +22,10 @@ public partial class ExpressionTests
 
     private class DefaultDynamicLinqCustomTypeProviderForStaticTesting : DefaultDynamicLinqCustomTypeProvider
     {
+        public DefaultDynamicLinqCustomTypeProviderForStaticTesting() : base(ParsingConfig.Default)
+        {
+        }
+
         public override HashSet<Type> GetCustomTypes() => new(base.GetCustomTypes()) { typeof(Methods), typeof(MethodsItemExtension) };
     }
 

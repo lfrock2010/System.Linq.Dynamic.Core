@@ -5,7 +5,6 @@
         <AssemblyName>System.Linq.Dynamic.Core.Tests</AssemblyName>
         <DebugType>full</DebugType>
         <SignAssembly>True</SignAssembly>
-        <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <AssemblyOriginatorKeyFile>../../src/System.Linq.Dynamic.Core/System.Linq.Dynamic.Core.snk</AssemblyOriginatorKeyFile>
         <ProjectGuid>{912FBF24-3CAE-4A50-B5EA-E525B9FAEC80}</ProjectGuid>
@@ -45,7 +44,7 @@
     </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
-        <PackageReference Include="EntityFramework" Version="6.2.0" />
+        <PackageReference Include="EntityFramework" Version="6.5.0" />
         <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.1" />
         <PackageReference Include="LinqKit.EntityFramework" Version="1.1.15" />
 

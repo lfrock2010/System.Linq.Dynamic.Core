@@ -1,7 +1,50 @@
-# v1.3.9-preview-02 (03 February 2024)
+# v1.4.0 (31 May 2024)
+- [#807](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/807) - PredefinedTypesHelper: Fix loading types from System.Data.Entity and EntityFramework [bug] contributed by [StefH](https://github.com/StefH)
+- [#790](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/790) - .NET 8 (and possible all non-NETSTANDARD and higher versions) attempt to load EF 6 types [bug]
+- [#812](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/812) - &gt;= 1.3.3 Slow First Dynamic Select
+
+# v1.3.14 (03 May 2024)
+- [#804](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/804) - Fix calling methods on a constant string [bug] contributed by [StefH](https://github.com/StefH)
+- [#806](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/806) - Support implicit boolean operator for logical operations (And, Or) [feature] contributed by [StefH](https://github.com/StefH)
+- [#808](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/808) - Fix calling Average without any arguments [bug] contributed by [StefH](https://github.com/StefH)
+- [#809](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/809) - Add unit test: Where_Dynamic_ConcatString [test] contributed by [StefH](https://github.com/StefH)
+- [#811](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/811) - Add extra unit test for calling methods on a string property [test] contributed by [StefH](https://github.com/StefH)
+- [#626](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/626) - '&amp;&amp;' and '||' operators incompatible between operand type 'bool' and type with implicit conversation to 'bool' [bug]
+- [#633](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/633) - Fail to GroupBy Select Where Average [bug]
+- [#783](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/783) - Performance Issue with EF Core 8.0 and Microsoft.EntityFrameworkCore.DynamicLinq Package [duplicate]
+- [#803](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/803) - Updating to 1.3.13 - No property or field 'XXXXX' exists in type 'Char' [bug]
+- [#810](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/810) - Issue with Where() method when filtering multiple string properties while using ToLower() [bug]
+
+# v1.3.13 (25 April 2024)
+- [#802](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/802) - Fix DynamicExpressionParser for IQueryable [bug] contributed by [StefH](https://github.com/StefH)
+- [#801](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/801) - ExpressionParser finds Types from IEnumerable instead of IQueryable (breaks Code) (worked in 1.3.9) [bug]
+
+# v1.3.12 (18 April 2024)
+- [#800](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/800) - Fix String.Equals together with other condition [bug] contributed by [StefH](https://github.com/StefH)
+- [#799](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/799) - Error with 'Equals' together with other parameters [bug]
+
+# v1.3.11 (17 April 2024)
+- [#785](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/785) - Add CodeFirst examples for .NET 6 and 8 [test] contributed by [StefH](https://github.com/StefH)
+- [#795](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/795) - Fix Aggregate methods Average and Sum [bug] contributed by [StefH](https://github.com/StefH)
+- [#796](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/796) - Fixed ParseArgumentList when using lambda filter on list of dictionaries [bug] contributed by [StefH](https://github.com/StefH)
+- [#798](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/798) - Fix when using LINQ methods like &quot;Any&quot; on a string [bug] contributed by [StefH](https://github.com/StefH)
+- [#415](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/415) - Problem with Query over JObject, Filter with SubProperty not returning the correct value [bug]
+- [#440](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/440) - `it` isn't interpreted as the inner parameter when using `All` or `Any` [bug]
+- [#793](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/793) - Failure in ParseArgumentList when using lambda filter on list of dictionaries [bug]
+- [#794](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/794) - DynamicExpressionParser.ParseLambda regressions in v1.3.10 [bug]
+
+# v1.3.10 (03 March 2024)
+- [#774](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/774) - Fixed calling property on nested static class [bug] contributed by [StefH](https://github.com/StefH)
+- [#777](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/777) - Keep original type from subquery [bug] contributed by [StefH](https://github.com/StefH)
+- [#772](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/772) - Static helper class with name as property doesn't work after updating from v.1.0.8.18 to 1.3.8 [bug]
+- [#775](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/775) - Value typed property from subquery are casted as `object` [bug]
+- [#779](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/779) - try to call function inside select [bug]
+
+# v1.3.9 (29 February 2024)
 - [#761](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/761) - Add unit tests for Any [test] contributed by [StefH](https://github.com/StefH)
-- [#765](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/765) - #764 - Introduce Sliding Cache to Constant Expression Helper [feature] contributed by [TWhidden](https://github.com/TWhidden)
+- [#765](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/765) - Introduce Sliding Cache to Constant Expression Helper [feature] contributed by [TWhidden](https://github.com/TWhidden)
 - [#770](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/770) - Enhancements to SlidingCache&lt;&gt; for Improved Thread Safety and Performance [feature] contributed by [TWhidden](https://github.com/TWhidden)
+- [#780](https://github.com/zzzprojects/System.Linq.Dynamic.Core/pull/780) - Add RadzenDataGrid.BlazorApp example [test] contributed by [StefH](https://github.com/StefH)
 - [#764](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/764) - Possible Memory Leak with ConstantExpressionHelper [bug]
 - [#769](https://github.com/zzzprojects/System.Linq.Dynamic.Core/issues/769) - Enhancements to SlidingCache&lt;&gt; for Improved Thread Safety and Performance [bug]
 

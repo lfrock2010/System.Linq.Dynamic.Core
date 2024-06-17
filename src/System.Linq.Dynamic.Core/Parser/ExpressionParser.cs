@@ -34,6 +34,7 @@ public class ExpressionParser
     private readonly TextParser _textParser;
     private readonly NumberParser _numberParser;
     private readonly IExpressionHelper _expressionHelper;
+    private readonly ConstantExpressionHelper _constantExpressionHelper;
     private readonly ITypeFinder _typeFinder;
     private readonly ITypeConverterFactory _typeConverterFactory;
     private readonly Dictionary<string, object> _internals = new();
@@ -45,7 +46,6 @@ public class ExpressionParser
     private ParameterExpression? _root;
     private Type? _resultType;
     private bool _createParameterCtor;
-    private ConstantExpressionHelper _constantExpressionHelper;
 
     /// <summary>
     /// Gets name for the `it` field. By default this is set to the KeyWord value "it".
@@ -53,9 +53,8 @@ public class ExpressionParser
     public string ItName { get; private set; } = KeywordsHelper.KEYWORD_IT;
 
     /// <summary>
-    /// There was a problem when an expression contained multiple lambdas where
-    /// the ItName was not cleared and freed for the next lambda. This variable
-    /// stores the ItName of the last parsed lambda.
+    /// There was a problem when an expression contained multiple lambdas where the ItName was not cleared and freed for the next lambda.
+    /// This variable stores the ItName of the last parsed lambda.
     /// Not used internally by ExpressionParser, but used to preserve compatibility of parsingConfig.RenameParameterExpression
     /// which was designed to only work with mono-lambda expressions.
     /// </summary>
@@ -269,17 +268,19 @@ public class ExpressionParser
     // => operator - Added Support for projection operator
     private Expression ParseLambdaOperator()
     {
-        Expression expr = ParseOrOperator();
+        var expr = ParseOrOperator();
+
         if (_textParser.CurrentToken.Id == TokenId.Lambda && _it?.Type == expr.Type)
         {
             _textParser.NextToken();
-            if (_textParser.CurrentToken.Id == TokenId.Identifier || _textParser.CurrentToken.Id == TokenId.OpenParen)
+            if (_textParser.CurrentToken.Id is TokenId.Identifier or TokenId.OpenParen)
             {
                 var right = ParseConditionalOperator();
                 return Expression.Lambda(right, new[] { (ParameterExpression)expr });
             }
             _textParser.ValidateToken(TokenId.OpenParen, Res.OpenParenExpected);
         }
+
         return expr;
     }
 
@@ -387,19 +388,11 @@ public class ExpressionParser
                     throw ParseError(_textParser.CurrentToken.Pos, Res.IdentifierImplementingInterfaceExpected, typeof(IEnumerable));
                 }
 
-                var args = new[] { left };
-
-                Expression? nullExpressionReference = null;
-                if (_methodFinder.FindMethod(typeof(IEnumerableSignatures), nameof(IEnumerableSignatures.Contains), false, ref nullExpressionReference, ref args, out var containsSignature) != 1)
-                {
-                    throw ParseError(op.Pos, Res.NoApplicableAggregate, nameof(IEnumerableSignatures.Contains), string.Join(",", args.Select(a => a.Type.Name).ToArray()));
-                }
-
                 var typeArgs = new[] { left.Type };
 
-                args = new[] { right, left };
+                var args = new[] { right, left };
 
-                accumulate = Expression.Call(typeof(Enumerable), containsSignature!.Name, typeArgs, args);
+                accumulate = Expression.Call(typeof(Enumerable), nameof(Enumerable.Contains), typeArgs, args);
             }
             else
             {
@@ -1069,7 +1062,9 @@ public class ExpressionParser
         {
             throw ParseError(Res.NoItInScope);
         }
+
         _textParser.NextToken();
+
         return _it;
     }
 
@@ -1775,35 +1770,47 @@ public class ExpressionParser
         return false;
     }
 
-    private Expression ParseMemberAccess(Type? type, Expression? expression)
+    private Expression ParseMemberAccess(Type? type, Expression? expression, string? id = null)
     {
-        var isStaticAccess = false;
+        var errorPos = _textParser.CurrentToken.Pos;
+
+        // In case the expression is not null and the type is null, get the type from the expression.
         if (expression != null)
         {
-            type = expression.Type;
-        }
-        else
-        {
-            isStaticAccess = true;
+            type ??= expression.Type;
         }
 
-        int errorPos = _textParser.CurrentToken.Pos;
-        string id = GetIdentifier();
-        _textParser.NextToken();
+        // In case the id is not defined, get it and move the TextParser forward.
+        if (id == null)
+        {
+            id = GetIdentifier();
+            _textParser.NextToken();
+        }
+
+        // Parse as Lambda
+        if (_textParser.CurrentToken.Id == TokenId.Lambda && _it?.Type == type)
+        {
+            return ParseAsLambda(id);
+        }
 
         if (_textParser.CurrentToken.Id == TokenId.OpenParen)
         {
-            if (!isStaticAccess && type != typeof(string))
+            Expression[]? args = null;
+
+            var isStaticAccess = expression == null;
+            var isConstantString = expression is ConstantExpression { Value: string };
+
+            if (!isStaticAccess && !isConstantString && TypeHelper.TryFindGenericType(typeof(IEnumerable<>), type, out var enumerableType))
             {
-                var enumerableType = TypeHelper.FindGenericType(typeof(IEnumerable<>), type);
-                if (enumerableType != null)
+                var elementType = enumerableType.GetTypeInfo().GetGenericTypeArguments()[0];
+                if (TryParseEnumerable(expression!, elementType, id, errorPos, type, out args, out var enumerableExpression))
                 {
-                    Type elementType = enumerableType.GetTypeInfo().GetGenericTypeArguments()[0];
-                    return ParseEnumerable(expression!, elementType, id, errorPos, type);
+                    return enumerableExpression;
                 }
             }
 
-            Expression[] args = ParseArgumentList();
+            // If args is not set by TryParseEnumerable (in case when the expression is not an Enumerable), do parse the argument list here.
+            args ??= ParseArgumentList();
             switch (_methodFinder.FindMethod(type, id, isStaticAccess, ref expression, ref args, out var methodBase))
             {
                 case 0:
@@ -1835,10 +1842,9 @@ public class ExpressionParser
             }
         }
 
-        var @enum = TypeHelper.ParseEnum(id, type);
-        if (@enum != null)
+        if (TypeHelper.TryParseEnum(id, type, out var enumValue))
         {
-            return Expression.Constant(@enum);
+            return Expression.Constant(enumValue);
         }
 
 #if UAP10_0 || NETSTANDARD1_3
@@ -1847,15 +1853,9 @@ public class ExpressionParser
             return Expression.MakeIndex(expression, typeof(DynamicClass).GetProperty("Item"), new[] { Expression.Constant(id) });
         }
 #endif
-        MemberInfo? member = FindPropertyOrField(type!, id, expression == null);
-        if (member is PropertyInfo property)
+        if (TryFindPropertyOrField(type!, id, expression, out var propertyOrFieldExpression))
         {
-            return Expression.Property(expression, property);
-        }
-
-        if (member is FieldInfo field)
-        {
-            return Expression.Field(expression, field);
+            return propertyOrFieldExpression;
         }
 
         // #357 #662
@@ -1878,19 +1878,37 @@ public class ExpressionParser
             return _expressionHelper.ConvertToExpandoObjectAndCreateDynamicExpression(expression!, type, id);
         }
 #endif
-        // Parse as Lambda
-        if (_textParser.CurrentToken.Id == TokenId.Lambda && _it?.Type == type)
-        {
-            return ParseAsLambda(id);
-        }
 
-        // This could be enum like "A.B.C.MyEnum.Value1" or "A.B.C+MyEnum.Value1"
+        // This could be enum like "A.B.C.MyEnum.Value1" or "A.B.C+MyEnum.Value1".
+        //
+        // Or it's a nested (static) class with a
+        // - static property like "NestedClass.MyProperty"
+        // - static method like "NestedClass.MyMethod"
         if (_textParser.CurrentToken.Id is TokenId.Dot or TokenId.Plus)
         {
-            return ParseAsEnum(id);
+            return ParseAsEnumOrNestedClass(id);
         }
 
         throw ParseError(errorPos, Res.UnknownPropertyOrField, id, TypeHelper.GetTypeName(type));
+    }
+
+    private bool TryFindPropertyOrField(Type type, string id, Expression? expression, [NotNullWhen(true)] out Expression? propertyOrFieldExpression)
+    {
+        var member = FindPropertyOrField(type, id, expression == null);
+        switch (member)
+        {
+            case PropertyInfo property:
+                propertyOrFieldExpression = Expression.Property(expression, property);
+                return true;
+
+            case FieldInfo field:
+                propertyOrFieldExpression = Expression.Field(expression, field);
+                return true;
+
+            default:
+                propertyOrFieldExpression = null;
+                return false;
+        }
     }
 
     private static Expression CallMethod(Expression? expression, MethodInfo methodToCall, Expression[] args)
@@ -1971,13 +1989,13 @@ public class ExpressionParser
         return exp;
     }
 
-    private Expression ParseAsEnum(string id)
+    private Expression ParseAsEnumOrNestedClass(string id)
     {
         var parts = new List<string> { id };
 
-        while (_textParser.CurrentToken.Id == TokenId.Dot || _textParser.CurrentToken.Id == TokenId.Plus)
+        while (_textParser.CurrentToken.Id is TokenId.Dot or TokenId.Plus)
         {
-            if (_textParser.CurrentToken.Id == TokenId.Dot || _textParser.CurrentToken.Id == TokenId.Plus)
+            if (_textParser.CurrentToken.Id is TokenId.Dot or TokenId.Plus)
             {
                 parts.Add(_textParser.CurrentToken.Text);
                 _textParser.NextToken();
@@ -1990,70 +2008,99 @@ public class ExpressionParser
             }
         }
 
-        var enumTypeAsString = string.Concat(parts.Take(parts.Count - 2).ToArray());
-        var enumType = _typeFinder.FindTypeByName(enumTypeAsString, null, true);
-        if (enumType == null)
+        var typeAsString = string.Concat(parts.Take(parts.Count - 2).ToArray());
+        var type = _typeFinder.FindTypeByName(typeAsString, null, true);
+        if (type == null)
         {
-            throw ParseError(_textParser.CurrentToken.Pos, Res.EnumTypeNotFound, enumTypeAsString);
+            throw ParseError(_textParser.CurrentToken.Pos, Res.TypeNotFound, typeAsString);
         }
 
-        var enumValueAsString = parts.LastOrDefault();
-        if (enumValueAsString == null)
+        var isEnum = TypeHelper.IsEnumType(type);
+
+        var identifier = parts.LastOrDefault();
+        if (identifier == null)
         {
-            throw ParseError(_textParser.CurrentToken.Pos, Res.EnumValueExpected);
+            if (isEnum)
+            {
+                throw ParseError(_textParser.CurrentToken.Pos, Res.EnumTypeNotFound, typeAsString);
+            }
+
+            throw ParseError(_textParser.CurrentToken.Pos, Res.UnknownIdentifier, typeAsString);
         }
 
-        var enumValue = TypeHelper.ParseEnum(enumValueAsString, enumType);
-        if (enumValue == null)
+        if (isEnum)
         {
-            throw ParseError(_textParser.CurrentToken.Pos, Res.EnumValueNotDefined, enumValueAsString, enumTypeAsString);
+            if (TypeHelper.TryParseEnum(identifier, type, out var enumValue))
+            {
+                return Expression.Constant(enumValue);
+            }
+
+            throw ParseError(_textParser.CurrentToken.Pos, Res.EnumValueNotDefined, identifier, typeAsString);
         }
 
-        return Expression.Constant(enumValue);
+        return ParseMemberAccess(type, null, identifier);
     }
 
-    private Expression ParseEnumerable(Expression instance, Type elementType, string methodName, int errorPos, Type? type)
+    private bool TryParseEnumerable(Expression instance, Type elementType, string methodName, int errorPos, Type? type, out Expression[]? args, [NotNullWhen(true)] out Expression? expression)
     {
-        bool isQueryable = TypeHelper.FindGenericType(typeof(IQueryable<>), type) != null;
-        bool isDictionary = TypeHelper.IsDictionary(type);
-
+        // Keep the current _parent.
         var oldParent = _parent;
 
-        ParameterExpression? outerIt = _it;
-        ParameterExpression innerIt = ParameterExpressionHelper.CreateParameterExpression(elementType, string.Empty, _parsingConfig.RenameEmptyParameterExpressionNames);
-
+        // Set the _parent to the current _it.
         _parent = _it;
 
-        if (methodName == "Contains" || methodName == "ContainsKey" || methodName == "Skip" || methodName == "Take")
+        // Set the outerIt to the current _it.
+        var outerIt = _it;
+
+        // Create a new innerIt based on the elementType.
+        var innerIt = ParameterExpressionHelper.CreateParameterExpression(elementType, string.Empty, _parsingConfig.RenameEmptyParameterExpressionNames);
+
+        if (new[] { "Contains", "ContainsKey", "Skip", "Take" }.Contains(methodName))
         {
-            // for any method that acts on the parent element type, we need to specify the outerIt as scope.
+            // For any method that acts on the parent element type, we need to specify the outerIt as scope.
             _it = outerIt;
         }
         else
         {
+            // Else we need to specify the innerIt as scope.
             _it = innerIt;
         }
 
-        Expression[] args = ParseArgumentList();
+        args = ParseArgumentList();
 
+        // Revert the _it and _parent to the old values.
         _it = outerIt;
         _parent = oldParent;
 
-        if (isDictionary && _methodFinder.ContainsMethod(typeof(IDictionarySignatures), methodName, false, null, ref args))
+        var theType = type ?? instance.Type;
+        if (theType == typeof(string) && _methodFinder.ContainsMethod(theType, methodName, false, instance, ref args))
         {
-            var method = type!.GetMethod(methodName)!;
-            return Expression.Call(instance, method, args);
+            // In case the type is a string, and does contain the methodName (like "IndexOf"), then return false to indicate that the methodName is not an Enumerable method.
+            expression = null;
+            return false;
         }
 
-        if (!_methodFinder.ContainsMethod(typeof(IEnumerableSignatures), methodName, false, null, ref args))
+        if (type != null && TypeHelper.IsDictionary(type) && _methodFinder.ContainsMethod(type, methodName, false))
         {
-            throw ParseError(errorPos, Res.NoApplicableAggregate, methodName, string.Join(",", args.Select(a => a.Type.Name).ToArray()));
+            var dictionaryMethod = type.GetMethod(methodName)!;
+            expression = Expression.Call(instance, dictionaryMethod, args);
+            return true;
         }
 
-        Type callType = typeof(Enumerable);
-        if (isQueryable && _methodFinder.ContainsMethod(typeof(IQueryableSignatures), methodName, false, null, ref args))
+        // #794 - Check if the method is an aggregate (Average or Sum) method and try to update the arguments to match the method arguments
+        _methodFinder.CheckAggregateMethodAndTryUpdateArgsToMatchMethodArgs(methodName, ref args);
+
+        var callType = typeof(Enumerable);
+        if (TypeHelper.TryFindGenericType(typeof(IQueryable<>), type, out _) && _methodFinder.ContainsMethod(typeof(Queryable), methodName))
         {
             callType = typeof(Queryable);
+        }
+
+        // #633 - For Average without any arguments, try to find the non-generic Average method on the callType for the supplied parameter type.
+        if (methodName == nameof(Enumerable.Average) && args.Length == 0 && _methodFinder.TryFindAverageMethod(callType, theType, out var averageMethod))
+        {
+            expression = Expression.Call(null, averageMethod, new[] { instance });
+            return true;
         }
 
         Type[] typeArgs;
@@ -2067,15 +2114,19 @@ public class ExpressionParser
             typeArgs = new[] { ResolveTypeFromArgumentExpression(methodName, args[0]) };
             args = new Expression[0];
         }
-        else if (new[] { "Min", "Max", "Select", "OrderBy", "OrderByDescending", "ThenBy", "ThenByDescending", "GroupBy" }.Contains(methodName))
+        else if (new[] { "Max", "Min", "Select", "OrderBy", "OrderByDescending", "ThenBy", "ThenByDescending", "GroupBy" }.Contains(methodName))
         {
             if (args.Length == 2)
             {
                 typeArgs = new[] { elementType, args[0].Type, args[1].Type };
             }
-            else
+            else if (args.Length == 1)
             {
                 typeArgs = new[] { elementType, args[0].Type };
+            }
+            else
+            {
+                typeArgs = new[] { elementType };
             }
         }
         else if (methodName == "SelectMany")
@@ -2097,7 +2148,7 @@ public class ExpressionParser
         }
         else
         {
-            if (new[] { "Concat", "Contains", "DefaultIfEmpty", "Except", "Intersect", "Skip", "Take", "Union" }.Contains(methodName))
+            if (new[] { "Concat", "Contains", "ContainsKey", "DefaultIfEmpty", "Except", "Intersect", "Skip", "Take", "Union" }.Contains(methodName))
             {
                 args = new[] { instance, args[0] };
             }
@@ -2114,7 +2165,8 @@ public class ExpressionParser
             }
         }
 
-        return Expression.Call(callType, methodName, typeArgs, args);
+        expression = Expression.Call(callType, methodName, typeArgs, args);
+        return true;
     }
 
     private Type ResolveTypeFromArgumentExpression(string functionName, Expression argumentExpression, int? arguments = null)
@@ -2306,45 +2358,82 @@ public class ExpressionParser
         expr = args[0];
     }
 
-    private static string? GetOverloadedOperationName(TokenId tokenId)
+    private bool TryGetOverloadedEqualityOperator(TokenId tokenId, ref Expression left, ref Expression right, ref Expression[] args)
     {
-        switch (tokenId)
+        if (tokenId is TokenId.DoubleEqual or TokenId.Equal)
         {
-            case TokenId.DoubleEqual:
-            case TokenId.Equal:
-                return "op_Equality";
-            case TokenId.ExclamationEqual:
-                return "op_Inequality";
-            default:
-                return null;
+            const string method = "op_Equality";
+            return _methodFinder.ContainsMethod(left.Type, method, true, null, ref args) ||
+                   _methodFinder.ContainsMethod(right.Type, method, true, null, ref args);
         }
+
+        if (tokenId is TokenId.ExclamationEqual or TokenId.LessGreater)
+        {
+            const string method = "op_Inequality";
+            return _methodFinder.ContainsMethod(left.Type, method, true, null, ref args) ||
+                   _methodFinder.ContainsMethod(right.Type, method, true, null, ref args);
+        }
+
+        return false;
+    }
+
+    private bool TryGetOverloadedImplicitOperator(TokenId tokenId, ref Expression left, ref Expression right)
+    {
+        const string methodName = "op_Implicit";
+        if (tokenId is not (TokenId.Ampersand or TokenId.DoubleAmpersand or TokenId.Bar or TokenId.DoubleBar))
+        {
+            return false;
+        }
+
+        Expression? expression = null;
+        var overloadedImplicitOperatorFound = false;
+
+        // If the left is not a boolean, try to find the "op_Implicit" method on the left which takes the left as parameter and returns a boolean.
+        if (left.Type != typeof(bool))
+        {
+            var args = new[] { left };
+            if (_methodFinder.FindMethod(left.Type, methodName, true, ref expression, ref args, out var methodBase) > 0 && methodBase is MethodInfo methodInfo && methodInfo.ReturnType == typeof(bool))
+            {
+                left = Expression.Call(methodInfo, left);
+                overloadedImplicitOperatorFound = true;
+            }
+        }
+
+        // If the right is not a boolean, try to find the "op_Implicit" method on the right which takes the right as parameter and returns a boolean.
+        if (right.Type != typeof(bool))
+        {
+            var args = new[] { right };
+            if (_methodFinder.FindMethod(right.Type, methodName, true, ref expression, ref args, out var methodBase) > 0 && methodBase is MethodInfo methodInfo && methodInfo.ReturnType == typeof(bool))
+            {
+                right = Expression.Call(methodInfo, right);
+                overloadedImplicitOperatorFound = true;
+            }
+        }
+
+        return overloadedImplicitOperatorFound;
     }
 
     private void CheckAndPromoteOperands(Type signatures, TokenId opId, string opName, ref Expression left, ref Expression right, int errorPos)
     {
         Expression[] args = { left, right };
 
-        // support operator overloading
-        var nativeOperation = GetOverloadedOperationName(opId);
-        bool found = false;
-
-        if (nativeOperation != null)
+        // 1. Try to find the Equality/Inequality operator
+        // 2. Try to find the method with the given signature
+        if (TryGetOverloadedEqualityOperator(opId, ref left, ref right, ref args) || _methodFinder.ContainsMethod(signatures, "F", false, null, ref args))
         {
-            // first try left operand's equality operators
-            found = _methodFinder.ContainsMethod(left.Type, nativeOperation, true, null, ref args);
-            if (!found)
-            {
-                found = _methodFinder.ContainsMethod(right.Type, nativeOperation, true, null, ref args);
-            }
+            left = args[0];
+            right = args[1];
+
+            return;
         }
 
-        if (!found && !_methodFinder.ContainsMethod(signatures, "F", false, null, ref args))
+        // 3. Try to find the Implicit operator
+        if (TryGetOverloadedImplicitOperator(opId, ref left, ref right))
         {
-            throw IncompatibleOperandsError(opName, left, right, errorPos);
+            return;
         }
 
-        left = args[0];
-        right = args[1];
+        throw IncompatibleOperandsError(opName, left, right, errorPos);
     }
 
     private static Exception IncompatibleOperandError(string opName, Expression expr, int errorPos)
