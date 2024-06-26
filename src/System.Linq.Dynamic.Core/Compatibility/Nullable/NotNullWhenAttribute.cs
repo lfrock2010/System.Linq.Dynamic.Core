@@ -22,7 +22,7 @@
 // SOFTWARE.
 #endregion
 
-#if NETSTANDARD1_3_OR_GREATER || NET35 || NET40 || NET45 || NET452 || NET46 || NETCOREAPP2_1 || UAP10_0
+#if NETSTANDARD1_3_OR_GREATER || NET35_OR_GREATER || NETCOREAPP2_1 || UAP10_0
 
 // ReSharper disable once CheckNamespace
 namespace System.Diagnostics.CodeAnalysis;
