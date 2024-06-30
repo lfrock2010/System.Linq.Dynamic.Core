@@ -73,6 +73,7 @@ namespace ConsoleAppEF3_1_nhibernate
 
 				var y = session.Query<Product>()
 					.Where("Properties.Name == @0", "First Product")
+					//.Where("Properties.Name + \"\" == @0", "First Product") //Nibernate exception when concat strings on WHERE expressions: System.NotSupportedException: 'System.String Concat(System.Object, System.Object)'
 					.ToList();
 
 				int i = 9;

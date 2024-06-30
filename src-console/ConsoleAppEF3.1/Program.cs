@@ -18,8 +18,8 @@ namespace ConsoleAppEF31
 
             var context = new TestContext();
 
-            //context.Database.EnsureDeleted();
-            //context.Database.EnsureCreated();
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
 
             var dateDeleted = new DateTime(2019, 2, 2);
 
@@ -67,7 +67,8 @@ namespace ConsoleAppEF31
             }
 
             var config = new ParsingConfig { AllowNewToEvaluateAnyType = true, ResolveTypesBySimpleName = false };
-            var select = context.Cars.Select<Car>(config, $"new {typeof(Car).FullName}(it.Key as Key, \"?\" as Brand, string(null) as Color, string(\"e\") as Extra)");
+            //var select = context.Cars.Select<Car>(config, $"new {typeof(Car).FullName}(it.Key as Key, \"?\" as Brand, string(null) as Color, string(\"e\") as Extra)");
+            var select = context.Cars.Where("Brand == @0", "Alfa").Select<Car>(config, $"new {typeof(Car).FullName}(it.Key as Key, \"?\" as Brand, string(null) as Color, string(\"e\") as Extra)");
             foreach (Car car in select)
             {
                 Console.WriteLine($"{car.Key}");
